@@ -19,6 +19,30 @@ pub mod pallet {
 	use frame_support::pallet_prelude::*;
 	use frame_system::pallet_prelude::*;
 
+	type AccountOf<T> = <T as frame_system::Config>::AccountId;
+
+	#[derive(Clone, Encode, Decode, PartialEq)]
+	pub struct file<T: Config>{
+		pub content_id: [u8; 16],
+		pub file_size: u8,
+		pub file_link: String,
+		pub owner: AccountOf<T>,
+		pub allow_download: bool,
+		pub is_privileged: file_type,
+	}
+
+	#[derive(Encode, Decode, Debug, Clone, PartialEq)]
+	pub enum file_type {
+		Normal,
+		Privileged,
+	}
+
+	impl Default for file_type{
+		fn default() -> Self {
+			file_type::Normal
+		}
+	}
+
 	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
@@ -55,6 +79,8 @@ pub mod pallet {
 		NoneValue,
 		/// Errors should have helpful documentation associated with them.
 		StorageOverflow,
+
+		NotFileOwner,
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
@@ -99,4 +125,16 @@ pub mod pallet {
 			}
 		}
 	}
+
+	// pub fn transfer_file_to(
+	// 	content_id: [u8; 16],
+	// 	to: AccountId,
+	// ) -> Result<(), Error<T>>{
+	// 	let mut file = Self::file(&content_id).ok_or(<Error<T>>::FileNotExist)?;
+	// 	let prev_owner = file.owner.clone();
+
+
+	// 	Ok(())
+	// }
+
 }
